@@ -1,4 +1,4 @@
-export class Griid {
+export class Grid {
     readonly width: number
     readonly height: number
     readonly data: Uint8Array
