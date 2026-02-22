@@ -1,7 +1,7 @@
 export class Grid {
     readonly width: number
     readonly height: number
-    readonly data: Uint8Array
+    data: Uint8Array
 
     constructor(width: number, height: number) {
         this.width = width

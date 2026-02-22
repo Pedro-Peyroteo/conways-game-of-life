@@ -76,7 +76,7 @@ export class Simulation {
 
   private swapBuffers(): void {
     const temp = this.current.data
-    this.current.data.set(this.next.data)
-    this.next.data.set(temp)
+    this.current.data = this.next.data
+    this.next.data = temp
   }
 }
