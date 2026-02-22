@@ -1,6 +1,6 @@
-import { Grid } from "./gird";
-import { RuleConfig } from "./types";
-import { parseRule } from "./rules";
+import { Grid } from "./grid.js";
+import { RuleConfig } from "./types.js";
+import { parseRule } from "./rules.js";
 
 export class Simulation {
     readonly width: number

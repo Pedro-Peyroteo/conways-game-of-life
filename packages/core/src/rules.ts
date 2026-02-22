@@ -1,4 +1,4 @@
-import { RuleConfig } from "./types";
+import { RuleConfig } from "./types.js";
 
 export function parseRule(rule: string): RuleConfig {
     const [birthPart, survivalPart] = rule.split("/")
