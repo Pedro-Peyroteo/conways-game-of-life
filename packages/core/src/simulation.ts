@@ -1,6 +1,6 @@
-import { Grid } from "./grid.js";
-import { RuleConfig } from "./types.js";
-import { parseRule } from "./rules.js";
+import { Grid } from './grid.js';
+import { RuleConfig } from './types.js';
+import { parseRule } from './rules.js';
 
 export class Simulation {
   readonly width: number;
@@ -10,9 +10,9 @@ export class Simulation {
   rules: RuleConfig;
   tick: number = 0;
 
-  constructor(width: number, height: number, rule = "B3/S23") {
+  constructor(width: number, height: number, rule = 'B3/S23') {
     if (width <= 0 || height <= 0) {
-      throw new Error("Simulation dimensions must be positive integers");
+      throw new Error('Simulation dimensions must be positive integers');
     }
 
     this.width = width;

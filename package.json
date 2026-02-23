@@ -7,7 +7,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "dev": "pnpm -r --parallel dev",
-    "test": "node dist/test.js"
+    "test": "node dist/test.js",
+    "format": "prettier --write ."
   },
   "keywords": [],
   "author": "",
@@ -16,6 +17,7 @@
   "packageManager": "pnpm@10.30.1",
   "devDependencies": {
     "@types/node": "^25.3.0",
+    "prettier": "^3.8.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }
