@@ -1,6 +1,6 @@
 import { Grid } from './grid.js';
-import type { RuleConfig, CellState } from './types.js';
-import { parseRule } from './rules.js';
+import type { CellState, NormalizedRule } from './types.js';
+import { parseRule, normalizeRule } from './rules.js';
 
 export class Simulation {
   readonly width: number;
@@ -8,7 +8,7 @@ export class Simulation {
 
   private current: Grid;
   private next: Grid;
-  private rules: RuleConfig;
+  private rule: NormalizedRule;
 
   private _tick = 0;
 
@@ -22,7 +22,8 @@ export class Simulation {
 
     this.current = new Grid(width, height);
     this.next = new Grid(width, height);
-    this.rules = parseRule(rule);
+
+    this.rule = normalizeRule(parseRule(rule));
   }
 
   get tick(): number {
@@ -37,8 +38,17 @@ export class Simulation {
     this.current.set(x, y, state);
   }
 
+  /**
+   * Returns internal state buffer reference.
+   * DO NOT mutate externally.
+   * Intended for serialization only.
+   */
   getState(): Uint8Array {
-    return this.current._unsafeGetRawBuffer();
+    return this.current.getRawBufferUnsafe();
+  }
+
+  setRule(rule: string): void {
+    this.rule = normalizeRule(parseRule(rule));
   }
 
   step(): void {
@@ -50,9 +60,9 @@ export class Simulation {
         let nextState: CellState = 0;
 
         if (alive) {
-          nextState = this.rules.survival.includes(neighbors) ? 1 : 0;
+          nextState = this.rule.survivalMap[neighbors] ? 1 : 0;
         } else {
-          nextState = this.rules.birth.includes(neighbors) ? 1 : 0;
+          nextState = this.rule.birthMap[neighbors] ? 1 : 0;
         }
 
         this.next.set(x, y, nextState);
@@ -64,7 +74,7 @@ export class Simulation {
   }
 
   randomize(density = 0.5): void {
-    const buffer = this.current._unsafeGetRawBuffer();
+    const buffer = this.current.getRawBufferUnsafe();
 
     for (let i = 0; i < buffer.length; i++) {
       buffer[i] = Math.random() < density ? 1 : 0;
@@ -77,16 +87,12 @@ export class Simulation {
     this._tick = 0;
   }
 
-  setRule(rule: string): void {
-    this.rules = parseRule(rule);
-  }
-
   private swapBuffers(): void {
-    const currentBuffer = this.current._unsafeGetRawBuffer();
-    const nextBuffer = this.next._unsafeGetRawBuffer();
+    const currentBuffer = this.current.getRawBufferUnsafe();
+    const nextBuffer = this.next.getRawBufferUnsafe();
 
-    this.current._unsafeSetRawBuffer(nextBuffer);
-    this.next._unsafeSetRawBuffer(currentBuffer);
+    this.current.setRawBufferUnsafe(nextBuffer);
+    this.next.setRawBufferUnsafe(currentBuffer);
   }
 
   private countNeighbors(x: number, y: number): number {
