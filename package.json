@@ -5,10 +5,11 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "pnpm -r build",
     "dev": "pnpm -r --parallel dev",
-    "test": "node dist/test.js",
-    "format": "prettier --write ."
+    "build:core": "pnpm --filter @life-sim/core build",
+    "dev:core": "pnpm --filter @life-sim/core dev",
+    "test:core": "pnpm --filter @life-sim/core test"
   },
   "keywords": [],
   "author": "",
