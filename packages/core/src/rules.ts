@@ -1,27 +1,40 @@
-import { RuleConfig } from './types.js';
+import type { RuleConfig, NormalizedRule } from './types.js';
+
+const ruleRegex = /^B[0-8]+\/S[0-8]+$/;
 
 export function parseRule(rule: string): RuleConfig {
-  const ruleRegex = /^B[0-8]+\/S[0-8]+$/;
-
   if (!ruleRegex.test(rule)) {
     throw new Error(`Invalid rule format: ${rule}`);
   }
 
-  const parts = rule.split('/');
+  const slashIndex = rule.indexOf('/');
 
-  if (parts.length != 2) {
-    throw new Error(`Malformed rule: ${rule}`);
-  }
+  // Because regex validated format, slash must exist.
+  const birthPart = rule.slice(0, slashIndex);
+  const survivalPart = rule.slice(slashIndex + 1);
 
-  const birthPart = parts[0];
-  const survivalPart = parts[1];
+  const birth = Array.from(
+    new Set(birthPart.slice(1).split('').map(Number)),
+  ).sort();
 
-  if (!birthPart || !survivalPart) {
-    throw new Error(`Malformed rule: ${rule}`);
-  }
-
-  const birth = birthPart.replace('B', '').split('').map(Number);
-  const survival = survivalPart.replace('S', '').split('').map(Number);
+  const survival = Array.from(
+    new Set(survivalPart.slice(1).split('').map(Number)),
+  ).sort();
 
   return { birth, survival };
+}
+
+export function normalizeRule(rule: RuleConfig): NormalizedRule {
+  const birthMap = Array(9).fill(false);
+  const survivalMap = Array(9).fill(false);
+
+  for (const n of rule.birth) {
+    birthMap[n] = true;
+  }
+
+  for (const n of rule.survival) {
+    survivalMap[n] = true;
+  }
+
+  return { birthMap, survivalMap };
 }

@@ -8,4 +8,9 @@ export interface RuleConfig {
   survival: number[];
 }
 
+export interface NormalizedRule {
+  birthMap: boolean[];
+  survivalMap: boolean[];
+}
+
 export type CellState = 0 | 1;
