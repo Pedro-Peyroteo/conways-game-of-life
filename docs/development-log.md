@@ -8,19 +8,33 @@
 - Toroidal grid
 - Rule parsing (B/S notation)
 - Double buffering
+- Strict encapsulation
+- Infrastructure-grade boundaries
 
 ### Technical Decisions
 
 - 1D Uint8Array for memory efficiency
-- Explicit buffer swap instead of reallocating arrays
-- Pure engine with zero IO coupling
-- Strict TypeScript mode enabled
+- Explicit buffer swap by reference
+- Precomputed boolean lookup maps for rule evaluation (O(1))
+- Constructor invariant validation
+- Encapsulation of internal grid buffers
+- Native Node test runner for unit testing
+- Strict TypeScript configuration enabled
+
+### Improvements Added During Hardening
+
+- Rule normalization and deduplication
+- Boolean lookup tables replacing `includes()` checks
+- Explicit unsafe raw buffer access methods
+- Replacement of smoke test with real unit tests
+- Blinker oscillation test for deterministic correctness
 
 ### Known Limitations
 
-- Uses naive neighbor counting (O(n \* 8))
-- No bit-packing yet
-- No performance benchmarking
+- Neighbor counting remains naive O(n \* 8)
+- No bit-packing (1 byte per cell)
+- No benchmarking suite yet
+- No boundary mode abstraction (toroidal only)
 
 ### Adjustment: ESM Migration
 
@@ -32,4 +46,4 @@ Resolution:
 - Marked packages as ESM (`"type": "module"`)
 - Aligned TypeScript config with modern Node execution
 
-This stabilizes runtime behavior and avoids loader ambiguity.
+This stabilized runtime behavior and removed loader ambiguity.
