@@ -1,14 +1,16 @@
 import { Grid } from './grid.js';
-import { RuleConfig } from './types.js';
+import type { RuleConfig, CellState } from './types.js';
 import { parseRule } from './rules.js';
 
 export class Simulation {
   readonly width: number;
   readonly height: number;
-  readonly current: Grid;
-  readonly next: Grid;
-  rules: RuleConfig;
-  tick: number = 0;
+
+  private current: Grid;
+  private next: Grid;
+  private rules: RuleConfig;
+
+  private _tick = 0;
 
   constructor(width: number, height: number, rule = 'B3/S23') {
     if (width <= 0 || height <= 0) {
@@ -17,9 +19,26 @@ export class Simulation {
 
     this.width = width;
     this.height = height;
+
     this.current = new Grid(width, height);
     this.next = new Grid(width, height);
     this.rules = parseRule(rule);
+  }
+
+  get tick(): number {
+    return this._tick;
+  }
+
+  getCell(x: number, y: number): CellState {
+    return this.current.get(x, y);
+  }
+
+  setCell(x: number, y: number, state: CellState): void {
+    this.current.set(x, y, state);
+  }
+
+  getState(): Uint8Array {
+    return this.current._unsafeGetRawBuffer();
   }
 
   step(): void {
@@ -28,32 +47,46 @@ export class Simulation {
         const alive = this.current.get(x, y);
         const neighbors = this.countNeighbors(x, y);
 
+        let nextState: CellState = 0;
+
         if (alive) {
-          this.next.set(x, y, this.rules.survival.includes(neighbors) ? 1 : 0);
+          nextState = this.rules.survival.includes(neighbors) ? 1 : 0;
         } else {
-          this.next.set(x, y, this.rules.birth.includes(neighbors) ? 1 : 0);
+          nextState = this.rules.birth.includes(neighbors) ? 1 : 0;
         }
+
+        this.next.set(x, y, nextState);
       }
     }
 
     this.swapBuffers();
-    this.tick++;
+    this._tick++;
   }
 
   randomize(density = 0.5): void {
-    for (let i = 0; i < this.current.data.length; i++) {
-      this.current.data[i] = Math.random() < density ? 1 : 0;
+    const buffer = this.current._unsafeGetRawBuffer();
+
+    for (let i = 0; i < buffer.length; i++) {
+      buffer[i] = Math.random() < density ? 1 : 0;
     }
   }
 
   clear(): void {
     this.current.clear();
     this.next.clear();
-    this.tick = 0;
+    this._tick = 0;
   }
 
   setRule(rule: string): void {
     this.rules = parseRule(rule);
+  }
+
+  private swapBuffers(): void {
+    const currentBuffer = this.current._unsafeGetRawBuffer();
+    const nextBuffer = this.next._unsafeGetRawBuffer();
+
+    this.current._unsafeSetRawBuffer(nextBuffer);
+    this.next._unsafeSetRawBuffer(currentBuffer);
   }
 
   private countNeighbors(x: number, y: number): number {
@@ -67,11 +100,5 @@ export class Simulation {
     }
 
     return count;
-  }
-
-  private swapBuffers(): void {
-    const temp = this.current.data;
-    this.current.data = this.next.data;
-    this.next.data = temp;
   }
 }
