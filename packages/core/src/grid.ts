@@ -33,12 +33,13 @@ export class Grid {
     this._data.fill(0);
   }
 
-  /** Internal use only — used by Simulation for buffer swap */
-  _unsafeGetRawBuffer(): Uint8Array {
+  /** Internal use only — performance critical */
+  getRawBufferUnsafe(): Uint8Array {
     return this._data;
   }
 
-  _unsafeSetRawBuffer(buffer: Uint8Array): void {
+  /** Internal use only — performance critical */
+  setRawBufferUnsafe(buffer: Uint8Array): void {
     this._data = buffer;
   }
 }
