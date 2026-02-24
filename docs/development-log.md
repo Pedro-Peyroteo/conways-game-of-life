@@ -47,3 +47,29 @@ Resolution:
 - Aligned TypeScript config with modern Node execution
 
 This stabilized runtime behavior and removed loader ambiguity.
+
+### Final Polish & Validation
+
+**ESM Export Correction**
+
+- Fixed `src/index.ts` to export `Simulation` class instead of test file
+- Ensures module consumers receive the actual API
+
+**Build Script Robustness**
+
+- Updated `packages/core/package.json` build scripts with explicit relative paths
+- Changed: `tsc -p tsconfig.json` → `tsc --project ./tsconfig.json --outDir ./dist`
+- Prevents build inconsistencies across different working directories and machines
+
+**Documentation Refactor**
+
+- Condensed root README from detailed explanation to concise overview
+- Added links to `/docs` for architecture, decisions, and development details
+- Reduces duplication and improves navigation
+
+**Verification**
+
+- ✅ Tests compile and run correctly
+- ✅ ESM exports resolve without errors
+- ✅ Build is reproducible from any working directory
+- ✅ All tests pass (Rule parsing, constructor invariants, blinker oscillation)
